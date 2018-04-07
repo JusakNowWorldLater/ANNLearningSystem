@@ -1,6 +1,9 @@
 #include "perceptron.h"
+#include "cfg.h"
+#include "gskfunctions.h"
+#include <iostream>
 
-Perceptron::Perceptron( std::vector<int> configuration )
+Perceptron::Perceptron( std::vector<int> configuration ) : m_learnKoef( gsk::learnKoef )
 {
 	for( int i = 0 ; i < configuration.size() ; i++ )
 	{
@@ -41,7 +44,7 @@ std::vector<double> Perceptron::calculate( std::vector<double> input )
 
 }
 
-/*void Perceptron::study( std::vector<double> input , std::vector<double> trueAnswer )
+void Perceptron::study( std::vector<double> input , std::vector<double> trueAnswers ) 
 {
 	std::vector<double> networkAnswers = calculate( input ) ;
 
@@ -50,11 +53,69 @@ std::vector<double> Perceptron::calculate( std::vector<double> input )
 		std::vector< std::vector<double> > errors ;
 		errors.resize( m_layers.size() ) ;
 
-		for( int i = m_layers.size() - 1 ; i >= 0 ; i++ )
+		errors[ m_layers.size() - 1 ].push_back( trueAnswers[i] - networkAnswers[i] ) ;
+
+		for( int j = m_layers.size() - 2 ; j >= 0 ; j-- ) //ERROR
 		{
-			for()
-			if( i == m_layers.size() - 1 )
-				errors[i]
+			errors[ j ] = calculateErrorsForLayer( m_layers[ j ] , errors[ j + 1 ] ) ;
+		}
+
+		for( int j = 0 ; j < m_layers.size() - 1 ; j++ )
+		{
+			changeLayerWeightsByErrors( m_layers[i] , m_layers[ i + 1 ] , errors[ i + 1 ] ) ;
 		}
 	}
-}*/
+}
+
+void Perceptron::changeLayerWeightsByErrors( Layer & currentLayer , Layer & nextLayer , std::vector<double> & lastLayerErrors )
+{
+	for( int i = 0 ; i < currentLayer.getSize() ; i++ )
+	{
+		for( int j = 0 ; j < lastLayerErrors.size() ; j++ )
+		{
+			double derivedFunc = gsk::function::sigmoid( nextLayer.getNode( j ).getInput() ) * ( 1 - gsk::function::sigmoid( nextLayer.getNode( j ).getInput() ) ) ;
+			currentLayer.getNode( i ).changeWeightOf( j , lastLayerErrors[ j ] * derivedFunc * currentLayer.getNode( i ).getInput() * m_learnKoef ) ;
+		}
+	}
+}
+
+std::vector<double> Perceptron::calculateErrorsForLayer( Layer & layer , std::vector<double> & lastLayerErrors )
+{
+	std::vector<double> errors ;
+
+	errors.resize( layer.getSize() ) ;
+
+	for( auto & value : errors )
+		value = 0 ;
+	
+	for( int i = 0 ; i < layer.getSize() ; i++ )
+	{
+		for( int j = 0 ; j < lastLayerErrors.size() ; j++ )
+		{
+			//std::cout << layer.getNode( i ).getWeightOf( j ) * lastLayerErrors[ j ] << "  |   LVL " << layer.m_index << " : " << i << "->" << j << std::endl ;
+			errors[ i ] += layer.getNode( i ).getWeightOf( j ) * lastLayerErrors[ j ] ;
+		}
+	}
+
+	//std::cout << std::endl << std::endl << std::endl ;
+
+	return errors ;
+}
+
+void Perceptron::showWeights()
+{
+	for( int i = 0 ; i < m_layers.size() ; i++ )
+	{
+		std::cout << "LVL " << i << ":" << std::endl ;
+		for( int j = 0 ; j < m_layers[ i ].getSize() ; j++ )
+		{
+			for( int k = 0 ; k < m_layers[ i + 1 ].getSize() ; k++ )
+			{
+				std::cout << j << "->" << k << " = " << m_layers[i].getNode( j ).getWeightOf( k ) << " " ;
+			}
+			std::cout << " | " ;
+		}
+
+		std::cout << std::endl ;
+	}
+}

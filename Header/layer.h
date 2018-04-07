@@ -15,9 +15,10 @@ public:
 	Node & getNode( int index ) ;
 	void takeLastLayer( Layer & layer ) ;
 	void takeInput( std::vector<double> input ) ;
+	const int m_index ;
+	
 private:
 	static int layerCount ;
-	const int m_index ;
 	std::vector<Node> m_nodes ;
 };
 

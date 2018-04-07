@@ -37,6 +37,11 @@ void Node::changeWeightOf( int index , double deltaWeight )
 	m_weights[index] += deltaWeight ;
 }
 
+int Node::getSize()
+{
+	return m_weights.size() ;
+}
+
 /*void Node::inputData( std::vector<Node> & lastLayer )
 {
 	m_input = m_shift ;

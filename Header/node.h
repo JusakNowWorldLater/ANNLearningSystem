@@ -11,6 +11,7 @@ public:
 	double calculateValue() ;
 	double getInput() ;
 	double getWeightOf( int index ) ;
+	int getSize() ;
 	void inputData( double input ) ;
 	void changeWeightOf( int index , double deltaWeight ) ;
 private:

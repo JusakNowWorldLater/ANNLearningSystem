@@ -1,5 +1,4 @@
 #include "layer.h"
-#include "cfg.h" 
 #include "gskfunctions.h"
 
 int Layer::layerCount = -1 ;

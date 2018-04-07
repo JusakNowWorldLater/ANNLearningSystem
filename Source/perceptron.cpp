@@ -55,9 +55,7 @@ void Perceptron::study( std::vector<double> input , std::vector<double> trueAnsw
 			std::vector< std::vector<double> > errors ;
 			errors.resize( m_layers.size() ) ;
 
-			errors[ m_layers.size() - 1 ].push_back( trueAnswers[i] - networkAnswers[i] ) ; //ERROR
-
-
+			errors[ m_layers.size() - 1 ].push_back( trueAnswers[i] - networkAnswers[i] ) ;
 
 			for( int j = 0 ; j < m_layers.size() - 1 ; j++ )
 			{

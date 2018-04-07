@@ -46,23 +46,28 @@ std::vector<double> Perceptron::calculate( std::vector<double> input )
 
 void Perceptron::study( std::vector<double> input , std::vector<double> trueAnswers ) 
 {
-	std::vector<double> networkAnswers = calculate( input ) ;
-
-	for( int i = 0 ; i < networkAnswers.size() ; i++ )
+	for( int repeating = 0 ; repeating < gsk::repeatingInStuding ; repeating++ )
 	{
-		std::vector< std::vector<double> > errors ;
-		errors.resize( m_layers.size() ) ;
+		std::vector<double> networkAnswers = calculate( input ) ;
 
-		errors[ m_layers.size() - 1 ].push_back( trueAnswers[i] - networkAnswers[i] ) ;
-
-		for( int j = m_layers.size() - 2 ; j >= 0 ; j-- ) //ERROR
+		for( int i = 0 ; i < networkAnswers.size() ; i++ )
 		{
-			errors[ j ] = calculateErrorsForLayer( m_layers[ j ] , errors[ j + 1 ] ) ;
-		}
+			std::vector< std::vector<double> > errors ;
+			errors.resize( m_layers.size() ) ;
 
-		for( int j = 0 ; j < m_layers.size() - 1 ; j++ )
-		{
-			changeLayerWeightsByErrors( m_layers[i] , m_layers[ i + 1 ] , errors[ i + 1 ] ) ;
+			errors[ m_layers.size() - 1 ].push_back( trueAnswers[i] - networkAnswers[i] ) ; //ERROR
+
+
+
+			for( int j = 0 ; j < m_layers.size() - 1 ; j++ )
+			{
+				changeLayerWeightsByErrors( m_layers[j] , m_layers[ j + 1 ] , errors[ j + 1 ] ) ;
+			}
+
+			for( int j = m_layers.size() - 2 ; j >= 0 ; j-- ) 
+			{
+				errors[ j ] = calculateErrorsForLayer( m_layers[ j ] , errors[ j + 1 ] ) ;
+			}
 		}
 	}
 }

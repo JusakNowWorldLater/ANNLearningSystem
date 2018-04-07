@@ -62,5 +62,7 @@ int main()
 
 	std::cout << trueAnswers << std::endl ;
 
+	perceptron.save( "Perceptrons/PoM.gskdb" ) ;
+
 	return 0 ;
 }

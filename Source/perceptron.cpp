@@ -2,6 +2,7 @@
 #include "cfg.h"
 #include "gskfunctions.h"
 #include <fstream>
+#include <iostream>
 
 Perceptron::Perceptron( std::vector<int> configuration ) : m_learnKoef( gsk::learnKoef )
 {
@@ -17,6 +18,47 @@ Perceptron::Perceptron( std::vector<int> configuration ) : m_learnKoef( gsk::lea
 
 Perceptron::Perceptron( std::string fileName ) : m_learnKoef( gsk::learnKoef )
 {
+	std::ifstream fIn( fileName ) ;
+
+	std::string line ;
+
+	std::getline( fIn , line ) ;
+
+	int layerCount = std::stoi( line ) , tmpInt ; 
+	std::vector<int> configuration ;
+	double tmpDouble ;
+
+	for( int i = 0 ; i < tmpInt ; i++ )
+	{
+		std::getline( fIn , line ) ;
+		tmpInt = std::stoi( line ) ;
+		configuration.push_back( tmpInt ) ;
+	}
+
+	for( int i = 0 ; i < configuration.size() ; i++ )
+	{
+		if( i != configuration.size() - 1 )
+			m_layers.push_back(Layer( configuration[i] , configuration[ i + 1 ] ) ) ;
+		else
+			m_layers.push_back(Layer( configuration[i] , 0 ) ) ;
+
+	}
+
+	for( auto & layer : m_layers )
+	{
+		for( int i = 0 ; i < layer.getSize() ; i++ )
+		{
+			for( int j = 0 ; j < layer.getNode( i ).getSize() ; j++ )
+			{
+				std::getline( fIn , line ) ;
+				tmpDouble = std::stof( line ) ;
+				layer.getNode( i ).changeWeightOf( j , -1.0f * layer.getNode( i ).getWeightOf( j ) + tmpDouble ) ;
+			}
+		}
+	}
+
+	fIn.close() ;
+
 
 }
 
